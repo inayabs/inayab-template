@@ -1,0 +1,10 @@
+# Ignore UI (Next.js) environment files, dependencies, and build artifacts
+ui/.env
+ui/node_modules
+ui/package-lock.json
+ui/.next
+
+# Ignore API (Laravel) environment files, dependencies, and lock files
+api/.env
+api/composer.lock
+api/vendor

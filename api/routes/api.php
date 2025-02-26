@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'auth'], function () {
     Route::post('login', [AuthController::class, 'login']);
+    Route::post('reset-request', [AuthController::class, 'reset_request']);
+    Route::post('change-password', [AuthController::class, 'change_password']);
     // Route::post('register', [AuthController::class, 'register']);
 });
 

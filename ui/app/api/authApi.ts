@@ -6,6 +6,14 @@ export const login = async (credentials: any) => {
   return axiosInstance.post(url + "/login", credentials);
 };
 
+export const resetRequest = async (data: any) => {
+  return axiosInstance.post(`${url}/reset-request`, data);
+};
+
+export const changePassword = async (data: any) => {
+  return axiosInstance.post(`${url}/change-password`, data);
+};
+
 // export const register = async (data: RegisterData) => {
 //   return axiosInstance.post(url + '/register', data);
 // };

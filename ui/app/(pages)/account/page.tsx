@@ -213,7 +213,7 @@ const Page = () => {
         </div>
         <div className="space-y-6">
           <ManageTwoFactor />
-          <Alerts />
+          {/* <Alerts /> */}
         </div>
       </div>
     </div>

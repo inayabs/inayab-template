@@ -15,13 +15,35 @@ use Spatie\Permission\Contracts\Role;
 class UserController extends Controller
 {
     //
-    public function index(){
-        $users = User::all();
+    public function index(Request $request)
+    {
+        $limit = $request->input('limit', 10); // Default to 10 per page
+        $search = $request->input('filter', ''); // Search filter (optional)
+        $sortBy = $request->input('sort_by', 'first_name'); // Default sorting field
+        $sortOrder = $request->input('sort_order', 'asc'); // Default sort order (asc or desc)
 
-        $userResource = UserResource::collection($users);
+        // Validate sorting order
+        $sortOrder = strtolower($sortOrder) === 'desc' ? 'desc' : 'asc';
 
-        return $userResource;
+        $query = User::query();
+
+        if (!empty($search)) {
+            $query->where('first_name', 'like', "%{$search}%")
+                ->orWhere('last_name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%");
+        }
+
+        // Apply sorting
+        $query->orderBy($sortBy, $sortOrder);
+
+        $users = $query->paginate($limit);
+
+        return UserResource::collection($users)->additional([
+            'total' => $users->total(),
+            'last_page' => $users->lastPage(),
+        ]);
     }
+    
 
     public function store(Request $request){
         try{
@@ -87,7 +109,7 @@ class UserController extends Controller
     // account management
     public function user(Request $request){
         $user = User::where('id', Auth::user()->id)->first();
-        // return response()->json($request->user());
+        
         return $user;
     }
 

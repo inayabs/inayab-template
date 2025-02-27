@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Faker\Factory as Faker;
 
 class UserSeeder extends Seeder
 {
@@ -39,5 +40,21 @@ class UserSeeder extends Seeder
             ]);
             $new_user->assignRole($user['role']);
         }
+
+        $faker = Faker::create();
+
+        foreach(range(300,400) as $i){
+            $new_user = User::create([
+                'first_name' => $faker->firstName,
+                'last_name' => $faker->lastName,
+                'email' => $faker->email,
+                'password' => $faker->text
+            ]);
+
+            $new_user->assignRole('User');
+        }
+
+        // make fake users
+
     }
 }

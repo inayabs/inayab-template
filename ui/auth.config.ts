@@ -2,7 +2,7 @@ import { CredentialsSignin, NextAuthConfig } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import AzureADB2CProvider from "next-auth/providers/azure-ad-b2c";
-import { login } from "./app/api/authApi";
+import { login, verifyCode } from "./app/api/authApi";
 import { any, ZodError } from "zod";
 import Credentials from "next-auth/providers/credentials";
 
@@ -27,20 +27,45 @@ const authConfig = {
         password: {
           type: "password",
         },
+        twoFactorCode: { type: "text", optional: true },
       },
       async authorize(credentials) {
-        const user = await login(credentials);
+        const { email, password, twoFactorCode } = credentials;
 
-        if (user && user.data) {
+        let user;
+
+        try {
+          // ✅ Attempt login with 2FA code if provided
+          user = await login({
+            email,
+            password,
+            twoFactorCode,
+          });
+
+          // 🚨 If authentication failed, return `null`
+          if (!user?.data || user.data.status === false) {
+            return null;
+          }
+
+          // ❌ If 2FA is required but no code was provided, prevent login
+          if (user.data.two_factor && !twoFactorCode) {
+            throw new Error("2FA required");
+          }
+
+          // ✅ Successful authentication, return user data
           return {
             id: user.data.id,
             first_name: user.data.first_name,
             last_name: user.data.last_name,
             email: user.data.email,
-            token: user.data.token, // Store token for requests
+            token: user.data.token,
+            two_factor: user.data.two_factor, // ✅ Ensure this updates properly
           };
+        } catch (error) {
+          // 🚨 Handle errors gracefully (optional logging)
+          console.error("Authorization Error:", error);
+          return null; // Ensure login fails safely
         }
-        return null;
       },
     }),
     // GoogleProvider({
@@ -65,44 +90,27 @@ const authConfig = {
     // error: '/test'
   },
   callbacks: {
-    async jwt({ token, user, session, trigger }) {
-      if (trigger === "update") {
-        // console.log("token", token);
-        // console.log("sessiom", session);
-        token.first_name = session.user.first_name;
-        token.last_name = session.user.last_name;
-        token.email = session.user.email;
-        // token.image = session.user.image;
-        // token
-      }
-
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.first_name = user.first_name; // ✅ Store first_name
-        token.last_name = user.last_name; // ✅ Store last_name
+        token.first_name = user.first_name;
+        token.last_name = user.last_name;
         token.email = user.email;
-        token.token = user.token; // ✅ Store auth token
-        // token.image = user.image;
+        token.token = user.token;
+        token.two_factor = user.two_factor;
       }
+
       return token;
     },
     async session({ session, token }) {
       session.user.id = token.id;
-      session.user.first_name = token.first_name; // ✅ Add first_name to session
-      session.user.last_name = token.last_name; // ✅ Add last_name to session
+      session.user.first_name = token.first_name;
+      session.user.last_name = token.last_name;
       session.user.email = token.email;
-      session.user.token = token.token; // ✅ Add auth token to session
-      // session.user.image = token.image;
+      session.user.token = token.token;
+      session.user.two_factor = token.two_factor;
       return session;
     },
-    // async signIn({ user }: { user: any }) {
-    //   // console.log('wtf man', user);
-    //   if (user) {
-    //     setToken(user.token);
-    //     return true;
-    //   }
-    //   return false;
-    // }
   },
   secret: process.env.NEXTAUTH_SECRET,
 } satisfies NextAuthConfig;

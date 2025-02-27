@@ -178,10 +178,12 @@ export default function DataTableDemo({
   tableLoading,
   data,
   columns,
+  filter,
 }: {
   tableLoading: any;
   data: any;
   columns: any;
+  filer: any;
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(

@@ -1,4 +1,5 @@
 import axiosInstance from "@/lib/axiosInstance";
+import { fetchClient } from "@/lib/fetch-client";
 
 const url = process.env.NEXT_PUBLIC_API_URL + "/user";
 
@@ -6,8 +7,13 @@ export const getUser = async () => {
   return axiosInstance.get(url);
 };
 
-export const getUsers = async () => {
-  return axiosInstance.get(`${url}s`);
+export const getUsers = async (queryParams: Record<string, any>) => {
+  const params = new URLSearchParams(queryParams).toString(); // Convert to query string
+
+  return axiosInstance.get(`${url}s?${params}`);
+  // return fetchClient(`${url}s${params}`, {
+  //   headers: { "Content-Type": "application/json" },
+  // });
 };
 
 export const updateUser = async (data: any) => {

@@ -71,9 +71,9 @@ const LayoutSidebar = ({ children }: { children: React.ReactNode }) => {
 
           {/* Toggle button aligned to the right */}
           <div className="flex-1" />
-          <div className="flex items-center gap-4 px-4">
+          {/* <div className="flex items-center gap-4 px-4">
             <ModeToggle />
-          </div>
+          </div> */}
         </header>
 
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>

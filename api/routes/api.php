@@ -20,6 +20,11 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('reset-request', [AuthController::class, 'reset_request']);
     Route::post('change-password', [AuthController::class, 'change_password']);
+    Route::post('verify-code',[AuthController::class,'verify_code']);
+
+    Route::middleware('auth:sanctum')->group(function(){
+        Route::post('update-2fa', [AuthController::class, 'update_2fa']);
+    });
     // Route::post('register', [AuthController::class, 'register']);
 });
 

@@ -1,131 +1,78 @@
 "use client";
 
 import * as React from "react";
-import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  HeartHandshake,
-  House,
-  Map,
-  PieChart,
-  Settings2,
-  ShieldAlert,
-  SquareTerminal,
-} from "lucide-react";
+import { HeartHandshake, House, ShieldAlert, Table } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
-import { NavProjects } from "@/components/nav-projects";
 import { NavUser } from "@/components/nav-user";
-import { TeamSwitcher } from "@/components/team-switcher";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
 
-// This is sample data.
 const data = {
-  // user: {
-  //   name: "shadcn",
-  //   email: "m@example.com",
-  //   avatar: "/avatars/shadcn.jpg",
-  // },
-  // user should be from session
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
   navMain: [
-    {
-      title: "Home",
-      url: "/",
-      icon: House,
-      // isActive: true,
-    },
+    { title: "Home", url: "/", icon: House },
     {
       title: "Mental Health Referrals",
       url: "/referrals",
       icon: HeartHandshake,
-      // isActive: true,
     },
     {
       title: "Admin",
       url: "#",
       icon: ShieldAlert,
-      // isActive: true,
       items: [
-        {
-          title: "PMHC MDS Exports",
-          url: "/admin/pmhc",
-          // isActive: true,
-        },
-        {
-          title: "User Management",
-          url: "/admin/users",
-        },
-        {
-          title: "Login Failed",
-          url: "/admin/login-failed",
-        },
+        { title: "PMHC MDS Exports", url: "/admin/pmhc" },
+        { title: "User Management", url: "/admin/users" },
+        { title: "Login Failed", url: "/admin/login-failed" },
       ],
     },
   ],
-  // projects: [
-  //   {
-  //     name: "Home",
-  //     url: "/",
-  //     icon: House,
-  //   },
-  //   {
-  //     name: "Design Engineering",
-  //     url: "#",
-  //     icon: Frame,
-  //   },
-  //   {
-  //     name: "Sales & Marketing",
-  //     url: "#",
-  //     icon: PieChart,
-  //   },
-  //   {
-  //     name: "Travel",
-  //     url: "#",
-  //     icon: Map,
-  //   },
-  // ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const user = session?.user || null;
+  const { state } = useSidebar();
 
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+      {/* Natural padding and spacing */}
+      <SidebarHeader
+        className={`flex justify-center ${
+          state == "collapsed" ? "items-center" : ""
+        } transition-all duration-200 ${
+          state === "collapsed" ? "py-2 px-0" : "py-4 px-4"
+        }`}
+      >
+        <Link
+          href="/"
+          className={`flex ${state === "collapsed" ? "justify-center" : ""} `}
+        >
+          <Image
+            src={
+              state === "collapsed"
+                ? "/branding/logo.png"
+                : "/branding/logo-full.png"
+            }
+            alt="Company Logo"
+            width={state === "collapsed" ? 60 : 180}
+            height={60}
+            className="cursor-pointer transition-all duration-200"
+            priority
+          />
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        {/* <NavMain items={data.projects} /> */}
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />

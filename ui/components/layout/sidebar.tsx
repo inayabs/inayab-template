@@ -16,6 +16,7 @@ import {
 } from "../ui/breadcrumb";
 import { ModeToggle } from "../ui/mode-toggle";
 import { House } from "lucide-react";
+import { NavUserDropdown } from "../nav-user-dropdown";
 
 const LayoutSidebar = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname(); // ✅ Get the current path
@@ -71,9 +72,10 @@ const LayoutSidebar = ({ children }: { children: React.ReactNode }) => {
 
           {/* Toggle button aligned to the right */}
           <div className="flex-1" />
-          {/* <div className="flex items-center gap-4 px-4">
+          <div className="flex items-center gap-4 px-4">
             <ModeToggle />
-          </div> */}
+            <NavUserDropdown />
+          </div>
         </header>
 
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>

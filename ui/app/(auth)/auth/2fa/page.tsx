@@ -19,7 +19,7 @@ export default function TwoFactorPage() {
           </div>
           Acme Inc. */}
         </a>
-        <TwoFactorForm />
+        {/* <TwoFactorForm /> */}
       </div>
     </div>
   );

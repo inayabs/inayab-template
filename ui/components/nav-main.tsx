@@ -39,15 +39,22 @@ export function NavMain({
     <SidebarGroup>
       <SidebarMenu>
         {items.map((item) => {
+          // ✅ Special condition: Dashboard `/` should ONLY be active when exactly on `/`
+          const isDashboard = item.url === "/";
+          const isActive = isDashboard
+            ? pathname === "/"
+            : pathname.startsWith(item.url);
+
           // ✅ Check if any child (submenu item) is active
-          const isChildActive = item.items?.some(
-            (subItem) => pathname === subItem.url
+          const isChildActive = item.items?.some((subItem) =>
+            pathname.startsWith(subItem.url)
           );
-          // ✅ Keep submenu open if a child is active, but don't mark the parent as active
-          const isMenuOpen = isChildActive;
+
+          // ✅ Keep submenu open if a child is active
+          const isMenuOpen = isActive || isChildActive;
 
           return item.items && item.items.length > 0 ? (
-            // ✅ Collapsible menu item (not active itself, but opens if a child is active)
+            // ✅ Collapsible menu item (keeps active if any sub-item is active)
             <Collapsible
               key={item.title}
               asChild
@@ -56,7 +63,7 @@ export function NavMain({
             >
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
-                  <SidebarMenuButton tooltip={item.title}>
+                  <SidebarMenuButton tooltip={item.title} isActive={isActive}>
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -65,10 +72,10 @@ export function NavMain({
                 <CollapsibleContent>
                   <SidebarMenuSub>
                     {item.items.map((subItem) => {
-                      const isActive = pathname === subItem.url; // ✅ Only child items get active styling
+                      const isSubActive = pathname.startsWith(subItem.url);
                       return (
                         <SidebarMenuSubItem key={subItem.title}>
-                          <SidebarMenuSubButton asChild isActive={isActive}>
+                          <SidebarMenuSubButton asChild isActive={isSubActive}>
                             <Link href={subItem.url}>
                               <span>{subItem.title}</span>
                             </Link>
@@ -81,12 +88,12 @@ export function NavMain({
               </SidebarMenuItem>
             </Collapsible>
           ) : (
-            // ✅ Non-collapsible menu item (can be active)
+            // ✅ Non-collapsible menu item (keeps active if path starts with it)
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
                 asChild
                 tooltip={item.title}
-                isActive={pathname === item.url}
+                isActive={isActive}
               >
                 <Link href={item.url} className="flex items-center gap-2">
                   {item.icon && <item.icon />}

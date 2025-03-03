@@ -90,7 +90,7 @@ const authConfig = {
     // error: '/test'
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.first_name = user.first_name;
@@ -100,15 +100,26 @@ const authConfig = {
         token.two_factor = user.two_factor;
       }
 
+      if (trigger === "update") {
+        console.log("session", session);
+        const { user } = session;
+        token.first_name = user.first_name;
+        token.last_name = user.last_name;
+        token.email = user.email;
+      }
+
       return token;
     },
     async session({ session, token }) {
-      session.user.id = token.id;
-      session.user.first_name = token.first_name;
-      session.user.last_name = token.last_name;
-      session.user.email = token.email;
-      session.user.token = token.token;
-      session.user.two_factor = token.two_factor;
+      session.user = {
+        ...session.user,
+        id: token.id,
+        first_name: token.first_name || "",
+        last_name: token.last_name || "",
+        email: token.email,
+        token: token.token || "",
+        two_factor: token.two_factor || false,
+      };
       return session;
     },
   },

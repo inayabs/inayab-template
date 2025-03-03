@@ -8,7 +8,7 @@ import { signIn, useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { ComponentPropsWithoutRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
 import { CircleAlert, CircleCheck, LoaderCircle } from "lucide-react";
@@ -37,11 +37,11 @@ const formSchema = z
 
 type UserFormValue = z.infer<typeof formSchema>;
 
-export function ChangePForm({
-  code,
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<"div" & { code: string }>) {
+interface ChangePFormProps extends ComponentPropsWithoutRef<"div"> {
+  code: string;
+}
+
+export function ChangePForm({ code, className, ...props }: ChangePFormProps) {
   const { data: session } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(false);

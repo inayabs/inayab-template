@@ -1,7 +1,15 @@
 "use client";
 
 import * as React from "react";
-import { HeartHandshake, House, ShieldAlert, Table } from "lucide-react";
+import {
+  HeartHandshake,
+  Home,
+  House,
+  MonitorUp,
+  ShieldAlert,
+  Table,
+  Users,
+} from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
@@ -19,22 +27,32 @@ import Link from "next/link";
 
 const data = {
   navMain: [
-    { title: "Home", url: "/", icon: House },
+    { title: "Dashboard", url: "/", icon: Home },
+    // {
+    //   title: "Mental Health Referrals",
+    //   url: "/referrals",
+    //   icon: HeartHandshake,
+    // },
+    // {
+    //   title: "Upload CSV",
+    //   url: "/main",
+    //   icon: MonitorUp,
+    // },
     {
-      title: "Mental Health Referrals",
-      url: "/referrals",
-      icon: HeartHandshake,
+      title: "Users",
+      url: "/users",
+      icon: Users,
     },
-    {
-      title: "Admin",
-      url: "#",
-      icon: ShieldAlert,
-      items: [
-        { title: "PMHC MDS Exports", url: "/admin/pmhc" },
-        { title: "User Management", url: "/admin/users" },
-        { title: "Login Failed", url: "/admin/login-failed" },
-      ],
-    },
+    // {
+    //   title: "Admin",
+    //   url: "#",
+    //   icon: ShieldAlert,
+    //   items: [
+    //     { title: "PMHC MDS Exports", url: "/admin/pmhc" },
+    //     { title: "User Management", url: "/admin/users" },
+    //     { title: "Login Failed", url: "/admin/login-failed" },
+    //   ],
+    // },
   ],
 };
 
@@ -74,9 +92,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navMain} />
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={user} />
-      </SidebarFooter>
+      <SidebarFooter>{/* <NavUser user={user} /> */}</SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );

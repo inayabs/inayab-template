@@ -144,12 +144,7 @@ export function ForgotPForm({
                 </div>
                 <div className="text-right text-sm">
                   {/* Don&apos;t have an account?{" "} */}
-                  <a
-                    href="/auth/login"
-                    className="underline underline-offset-4"
-                  >
-                    Back to login
-                  </a>
+                  <a href="/auth/login">Back to login</a>
                 </div>
               </div>
             </form>

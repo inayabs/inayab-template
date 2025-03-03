@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -9,7 +9,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
-import { CircleAlert, CircleCheck, LoaderCircle, Lock } from "lucide-react";
+import { CircleAlert, LoaderCircle, Lock } from "lucide-react";
 
 export function TwoFactorForm({
   email,
@@ -19,11 +19,19 @@ export function TwoFactorForm({
   setVerifyLoading,
 }) {
   const [code, setCode] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // ✅ Automatically submit when all 6 digits are entered
+  useEffect(() => {
+    if (code.length === 6) {
+      onSubmit();
+    }
+  }, [code]);
+
   const onSubmit = async () => {
-    onVerify(code);
+    if (code.length === 6) {
+      onVerify(code);
+    }
   };
 
   return (
@@ -51,7 +59,7 @@ export function TwoFactorForm({
           onChange={(value) =>
             setCode(value.replace(/[^A-Z0-9]/gi, "").toUpperCase())
           }
-          disabled={loading}
+          disabled={verifyLoading}
           className="w-full flex justify-center"
         >
           <InputOTPGroup className="w-full flex justify-between gap-2">

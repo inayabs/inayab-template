@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,22 +14,45 @@ import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { TwoFactorForm } from "./forms/auth/2fa-form";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+
+// ✅ Define form validation schema using Zod
+const formSchema = z.object({
+  email: z.string().email("Invalid email address").min(1, "Email is required"),
+  password: z.string().min(1, "Password is required"),
+});
+
+type UserFormValue = z.infer<typeof formSchema>;
 
 export function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [show2FA, setShow2FA] = useState(false);
   const [verifyLoading, setVerifyLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState(""); // Store password for 2FA sign-in
 
-  const onSubmit = async () => {
+  const form = useForm<UserFormValue>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { email: "", password: "" },
+  });
+
+  const onSubmit = async (data: UserFormValue) => {
     setLoading(true);
     setHasError(false);
     setErrorMessage("");
+    setEmail(data.email);
+    setPassword(data.password); // Store password for later use in 2FA
 
-    login({ email, password }).then((res) => {
+    login({ email: data.email, password: data.password }).then((res) => {
       const { message, status, two_factor_validation } = res.data;
 
       if (!status) {
@@ -43,8 +69,8 @@ export function LoginForm() {
       }
 
       signIn("credentials", {
-        email,
-        password,
+        email: data.email,
+        password: data.password,
         redirect: true,
         callbackUrl: "/",
       });
@@ -69,7 +95,7 @@ export function LoginForm() {
       signIn("credentials", {
         email,
         twoFactorCode: code,
-        password: password,
+        password, // ✅ Now includes password for proper 2FA sign-in
         redirect: true,
         callbackUrl: "/",
       });
@@ -79,7 +105,7 @@ export function LoginForm() {
   useEffect(() => {
     setErrorMessage("");
     setHasError(false);
-  }, [email, password, show2FA]);
+  }, [form.watch("email"), form.watch("password"), show2FA]);
 
   return (
     <Card className="w-full max-w-sm">
@@ -115,45 +141,67 @@ export function LoginForm() {
             setVerifyLoading={setVerifyLoading}
           />
         ) : (
-          <>
-            <div className="grid gap-2">
-              <Input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={loading}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+              {/* ✅ Email Input */}
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="Enter your email..."
+                        disabled={loading}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="grid gap-2">
-              <Input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-              />
-            </div>
-            <Button
-              onClick={onSubmit}
-              className="w-full relative"
-              disabled={loading}
-            >
-              {loading && (
-                <LoaderCircle className="absolute left-3 animate-spin h-4 w-4" />
-              )}
-              Login
-            </Button>
 
-            <div className="text-right text-sm">
-              <Link
-                href="/auth/forgot-password"
-                className="underline underline-offset-4"
+              {/* ✅ Password Input */}
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Enter your password..."
+                        disabled={loading}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* ✅ Login Button */}
+              <Button
+                type="submit"
+                className="w-full relative"
+                disabled={loading}
               >
-                Forgot password?
-              </Link>
-            </div>
-          </>
+                {loading && (
+                  <LoaderCircle className="absolute left-3 animate-spin h-4 w-4" />
+                )}
+                Login
+              </Button>
+
+              <div className="text-right text-sm">
+                <Link href="/auth/forgot-password" className="">
+                  Forgot password?
+                </Link>
+              </div>
+            </form>
+          </Form>
         )}
       </CardContent>
     </Card>

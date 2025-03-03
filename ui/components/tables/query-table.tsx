@@ -145,11 +145,9 @@ const QueryTable: React.FC<QueryTableProps> = ({ fetchUrl, columns }) => {
             {isFetching ? (
               Array.from({ length: ROWS_PER_PAGE }).map((_, rowIdx) => (
                 <TableRow key={rowIdx}>
-                  {columns.map((_, colIdx) => (
-                    <TableCell key={colIdx}>
-                      <Skeleton className="h-4 w-[200px]" />
-                    </TableCell>
-                  ))}
+                  <TableCell colSpan={columns.length}>
+                    <Skeleton className="h-5 " />
+                  </TableCell>
                 </TableRow>
               ))
             ) : data?.data.length ? (

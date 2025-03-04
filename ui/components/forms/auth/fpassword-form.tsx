@@ -3,13 +3,10 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { signIn, useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
 import { CircleAlert, CircleCheck, LoaderCircle } from "lucide-react";
 import {
@@ -33,8 +30,6 @@ export function ForgotPForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const { data: session } = useSession();
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -56,7 +51,11 @@ export function ForgotPForm({
       setLoading(false);
       setSuccess(response.data.message);
     } catch (e) {
-      setError(e.message);
+      if (e instanceof Error) {
+        setError(e.message);
+      } else {
+        setError("An unexpected error occurred");
+      }
       setLoading(false);
     }
   };

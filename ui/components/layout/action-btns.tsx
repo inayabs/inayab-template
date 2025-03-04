@@ -2,13 +2,12 @@ import React from "react";
 import { LoaderCircle, Save } from "lucide-react";
 import { Button } from "../ui/button";
 
-const ActionButtons = ({
-  handleSave,
-  saveBtnLoading,
-}: {
-  handleSave: any;
-  saveBtnLoading: any;
-}) => {
+interface ActionBtnProps {
+  handleSave: () => void;
+  saveBtnLoading: boolean;
+}
+
+const ActionButtons = ({ handleSave, saveBtnLoading }: ActionBtnProps) => {
   return (
     <div className="flex justify-end gap-4 mb-4">
       <Button

@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-import { useQueryState } from "nuqs";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/lib/axiosInstance";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -23,22 +22,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuCheckboxItem,
-} from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const ROWS_PER_PAGE = 10;
 
-interface QueryTableProps {
+interface QueryTableProps<T> {
   fetchUrl: string;
-  columns: ColumnDef<any>[];
+  columns: ColumnDef<T>[];
 }
 
-const QueryTable: React.FC<QueryTableProps> = ({ fetchUrl, columns }) => {
+const QueryTable = <T,>({ fetchUrl, columns }: QueryTableProps<T>) => {
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
@@ -58,7 +51,7 @@ const QueryTable: React.FC<QueryTableProps> = ({ fetchUrl, columns }) => {
       setFilter(debouncedFilter);
       setPage(1); // Reset page after search
     }
-  }, [debouncedFilter]);
+  }, [debouncedFilter, filter]);
 
   const { data, isFetching } = useQuery({
     queryKey: ["users", page, filter, sortColumn, sortOrder],
@@ -74,7 +67,8 @@ const QueryTable: React.FC<QueryTableProps> = ({ fetchUrl, columns }) => {
       });
       return response.data;
     },
-    keepPreviousData: true,
+    placeholderData: (previousData) => previousData,
+    // keepPreviousData: true,
     enabled: isHydrated,
   });
 
@@ -122,15 +116,21 @@ const QueryTable: React.FC<QueryTableProps> = ({ fetchUrl, columns }) => {
                   <TableHead
                     key={header.id}
                     className="text-left cursor-pointer"
-                    onClick={() =>
-                      handleSort(header.column.columnDef.accessorKey as string)
-                    }
+                    onClick={() => {
+                      if (
+                        "accessorKey" in header.column.columnDef &&
+                        typeof header.column.columnDef.accessorKey === "string"
+                      ) {
+                        handleSort(header.column.columnDef.accessorKey);
+                      }
+                    }}
                   >
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext()
                     )}
-                    {sortColumn === header.column.columnDef.accessorKey &&
+                    {"accessorKey" in header.column.columnDef &&
+                      sortColumn === header.column.columnDef.accessorKey &&
                       (sortOrder === "asc" ? (
                         <ArrowUp className="inline w-4 h-4 ml-1" />
                       ) : (

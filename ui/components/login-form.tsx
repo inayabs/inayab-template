@@ -52,7 +52,11 @@ export function LoginForm() {
     setEmail(data.email);
     setPassword(data.password); // Store password for later use in 2FA
 
-    login({ email: data.email, password: data.password }).then((res) => {
+    login({
+      email: data.email,
+      password: data.password,
+      twoFactorCode: null,
+    }).then((res) => {
       const { message, status, two_factor_validation } = res.data;
 
       if (!status) {
@@ -138,7 +142,6 @@ export function LoginForm() {
             onVerify={handleVerify2FA}
             onCancel={() => setShow2FA(false)}
             verifyLoading={verifyLoading}
-            setVerifyLoading={setVerifyLoading}
           />
         ) : (
           <Form {...form}>

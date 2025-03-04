@@ -2,7 +2,6 @@
 
 import React from "react";
 import { usePathname } from "next/navigation"; // ✅ Get current URL path
-import Link from "next/link";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "../ui/sidebar";
 import { AppSidebar } from "../app-sidebar";
 import { Separator } from "@radix-ui/react-separator";

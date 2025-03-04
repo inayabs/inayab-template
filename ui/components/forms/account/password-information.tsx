@@ -57,7 +57,11 @@ const PasswordInformation = () => {
       toast.success("Password updated successfully.");
       setSaveBtnLoading(false);
     } catch (error) {
-      toast.error(error?.message || "Failed to update password.");
+      if (error instanceof Error) {
+        toast.error(error.message || "Failed to update password.");
+      } else {
+        toast.error("Failed to update password.");
+      }
       setSaveBtnLoading(false);
     }
   };

@@ -3,13 +3,10 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { signIn, useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ComponentPropsWithoutRef, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { ComponentPropsWithoutRef, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
 import { CircleAlert, CircleCheck, LoaderCircle } from "lucide-react";
 import {
@@ -20,7 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from "../../ui/form";
-import { changePassword, resetRequest } from "@/app/api/authApi";
+import { changePassword } from "@/app/api/authApi";
 import { passwordSchema } from "@/utils/schema/userSchema";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -42,8 +39,6 @@ interface ChangePFormProps extends ComponentPropsWithoutRef<"div"> {
 }
 
 export function ChangePForm({ code, className, ...props }: ChangePFormProps) {
-  const { data: session } = useSession();
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -73,7 +68,11 @@ export function ChangePForm({ code, className, ...props }: ChangePFormProps) {
       setSuccess(response.data.message);
     } catch (e) {
       setSuccess("");
-      setError(e.message);
+      if (e instanceof Error) {
+        setError(e.message);
+      } else {
+        setError("An unexpected error occurred");
+      }
       setLoading(false);
     }
   };

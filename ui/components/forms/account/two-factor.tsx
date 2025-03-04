@@ -27,6 +27,8 @@ const ManageTwoFactor = () => {
 
   // ✅ Sync switch state when session updates
   useEffect(() => {
+    // console.log("twoFactorEnabled");
+    // console.log(session);
     setAlert(twoFactorEnabled);
   }, [twoFactorEnabled]);
 

@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/ui/theme-provider";
-import LayoutSidebar from "@/components/layout/sidebar";
-import { SessionProvider } from "next-auth/react";
 import Providers from "@/components/layout/providers";
 import { auth } from "@/auth";
 import { Toaster } from "sonner";

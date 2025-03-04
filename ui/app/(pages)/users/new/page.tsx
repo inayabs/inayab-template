@@ -25,7 +25,7 @@ const formSchema = z.object({
 
 type UserFormValue = z.infer<typeof formSchema>;
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
   const [saveBtnLoading, setSaveBtnLoading] = useState(false);
 
@@ -57,11 +57,21 @@ const page = () => {
       router.push("/users");
     } catch (error) {
       setSaveBtnLoading(false);
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : (error as any)?.response?.data?.message ||
-            "An unexpected error occurred";
+
+      let errorMessage = "An unexpected error occurred";
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error
+      ) {
+        const errResponse = (
+          error as { response?: { data?: { message?: string } } }
+        ).response;
+        errorMessage = errResponse?.data?.message || errorMessage;
+      }
 
       toast.error(errorMessage);
     }
@@ -113,4 +123,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

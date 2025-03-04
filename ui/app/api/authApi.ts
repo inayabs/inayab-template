@@ -2,23 +2,23 @@ import axiosInstance from "@/lib/axiosInstance";
 
 const url = process.env.NEXT_PUBLIC_API_URL + "/auth";
 
-export const login = (credentials: any) => {
+export const login = (credentials: UserLogin) => {
   return axiosInstance.post(url + "/login", credentials);
 };
 
-export const resetRequest = async (data: any) => {
+export const resetRequest = async (data: UserResetRequest) => {
   return axiosInstance.post(`${url}/reset-request`, data);
 };
 
-export const changePassword = async (data: any) => {
+export const changePassword = async (data: UserChangePassword) => {
   return axiosInstance.post(`${url}/change-password`, data);
 };
 
-export const updateTwoFactor = async (data: any) => {
+export const updateTwoFactor = async (data: UserUpdateTwoFactor) => {
   return axiosInstance.post(`${url}/update-2fa`, data);
 };
 
-export const verifyCode = async (data: any) => {
+export const verifyCode = async (data: UserVerifyCode) => {
   return axiosInstance.post(`${url}/verify-code`, data);
 };
 // export const register = async (data: RegisterData) => {

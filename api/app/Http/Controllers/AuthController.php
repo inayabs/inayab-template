@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PasswordResetMail;
+use App\Mail\TwoFactorCodeMail;
 use App\Models\PasswordResetToken;
 use App\Models\TwoFactorCode;
 use App\Models\User;
@@ -11,6 +13,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -49,7 +52,7 @@ class AuthController extends Controller
                     $newCode->save();
 
                     // TODO: Implement actual email sending logic
-                    // Mail::to($user->email)->send(new TwoFactorMail($code));
+                    Mail::to($user->email)->send(new TwoFactorCodeMail($user,$code));
 
                     return response()->json([
                         'status' => true,
@@ -73,7 +76,7 @@ class AuthController extends Controller
                 'status' => true,
                 'message' => 'Successfully logged in',
                 'image' => $user->image,
-                'two_factor' => $user->two_factor, // ✅ 2FA not required anymore
+                'two_factor' => $user->two_factor == 1 ?? false, // ✅ 2FA not required anymore
             ])->withCookie(cookie('authToken', $token, 60));
 
         } catch (Exception $e) {
@@ -145,7 +148,9 @@ class AuthController extends Controller
             }
 
             $token_link = $this->generate_reset_token($email);
-            
+
+            Mail::to($email)->send(new PasswordResetMail($emailExists, $token_link));
+
             return response()->json([
                 'status'=>true,
                 'message'=>'Reset password request success, please check your email.',
@@ -174,7 +179,7 @@ class AuthController extends Controller
             $new_token->save();
 
             $token_link = env('NEXT_APP_URL') . '/auth/change-password/' . $token;
-
+            
             return $token_link;
         }catch(Exception $e){
             throw new ErrorException($e->getMessage());

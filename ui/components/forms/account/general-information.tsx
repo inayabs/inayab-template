@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { z } from "zod";
-import { getSession, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { updateUser } from "@/app/api/userApi";
@@ -84,6 +84,7 @@ const GeneralInformation = () => {
         toast.success("User updated successfully");
       }
     } catch (error) {
+      console.log(error);
       toast.error("Error updating user");
     } finally {
       setSaveBtnLoading(false);

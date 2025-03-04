@@ -32,9 +32,12 @@ export function NavUserDropdown() {
     <DropdownMenu>
       {/* ✅ Circular Button for Avatar */}
       <DropdownMenuTrigger asChild>
-        <Button size="icon" variant="outlined" className="rounded-full p-0">
+        <Button size="icon" variant="outline" className="rounded-full p-0">
           <Avatar className="h-8 w-8 rounded-full">
-            <AvatarImage src={user.image} alt={user.name} />
+            <AvatarImage
+              src={user.image ?? undefined}
+              alt={`${user.first_name} ${user.last_name}`}
+            />
             <AvatarFallback>
               {user.first_name?.charAt(0).toUpperCase()}
               {user.last_name?.charAt(0).toUpperCase()}
@@ -54,7 +57,10 @@ export function NavUserDropdown() {
         <DropdownMenuLabel className="p-0 font-normal">
           <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
             <Avatar className="h-8 w-8 rounded-lg">
-              <AvatarImage src={user.avatar} alt={user.name} />
+              <AvatarImage
+                src={user.image ?? undefined}
+                alt={`${user.first_name} ${user.last_name}`}
+              />
               <AvatarFallback className="rounded-lg">
                 {user.first_name?.charAt(0).toUpperCase()}
                 {user.last_name?.charAt(0).toUpperCase()}

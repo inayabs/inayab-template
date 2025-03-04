@@ -2,9 +2,17 @@
 import QueryTable from "@/components/tables/query-table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download, FolderSync, UserPen, UserPlus, Users } from "lucide-react";
+import { UserPen, UserPlus, Users } from "lucide-react";
 import Link from "next/link";
 // import { Checkbox } from "@/components/ui/checkbox";
+
+interface User {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: string;
+}
 
 const Page = () => {
   const userColumns = [
@@ -15,7 +23,7 @@ const Page = () => {
     {
       accessorKey: "actions",
       header: "Actions",
-      cell: ({ row }: { row: any }) => (
+      cell: ({ row }: { row: { original: User } }) => (
         <div>
           <Link href={`/users/${row.original.id}`}>
             <UserPen className="w-4 h-4" />

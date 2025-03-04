@@ -9,25 +9,25 @@ import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LoaderCircle } from "lucide-react";
 import React from "react";
+import { UseFormReturn } from "react-hook-form";
+
+interface UserFormProps {
+  form: UseFormReturn<UserGeneral>;
+  saveBtnLoading: boolean;
+  formLoading: boolean;
+}
 
 const UserForm = ({
   form,
   saveBtnLoading,
   formLoading = false,
-}: {
-  form: any;
-  saveBtnLoading: any;
-  formLoading: any;
-}) => {
+}: UserFormProps) => {
   return (
     <div className="space-y-3">
       <FormField

@@ -1,4 +1,3 @@
-import { TwoFactorForm } from "@/components/forms/auth/2fa-form";
 import Image from "next/image";
 
 export default function TwoFactorPage() {

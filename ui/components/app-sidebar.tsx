@@ -1,18 +1,9 @@
 "use client";
 
 import * as React from "react";
-import {
-  HeartHandshake,
-  Home,
-  House,
-  MonitorUp,
-  ShieldAlert,
-  Table,
-  Users,
-} from "lucide-react";
+import { MonitorUp, Users } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
-import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -21,13 +12,12 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 
 const data = {
   navMain: [
-    { title: "Dashboard", url: "/", icon: Home },
+    { title: "Upload CSV", url: "/", icon: MonitorUp },
     // {
     //   title: "Mental Health Referrals",
     //   url: "/referrals",
@@ -57,8 +47,8 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { data: session } = useSession();
-  const user = session?.user || null;
+  // const { data: session } = useSession();
+  // const user = session?.user || null;
   const { state } = useSidebar();
 
   return (

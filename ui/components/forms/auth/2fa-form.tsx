@@ -2,24 +2,29 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
-import { CircleAlert, LoaderCircle, Lock } from "lucide-react";
+// import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
+import { LoaderCircle, Lock } from "lucide-react";
+
+interface TwoFactorFormProps {
+  email: string;
+  onVerify: (code: string) => void;
+  onCancel: () => void;
+  verifyLoading: boolean;
+}
 
 export function TwoFactorForm({
   email,
   onVerify,
   onCancel,
   verifyLoading,
-  setVerifyLoading,
-}) {
+}: TwoFactorFormProps) {
   const [code, setCode] = useState("");
-  const [error, setError] = useState("");
 
   // ✅ Automatically submit when all 6 digits are entered
   useEffect(() => {
@@ -43,13 +48,13 @@ export function TwoFactorForm({
         </CardTitle>
       </CardHeader>
       <CardContent className="grid gap-6">
-        {error && (
+        {/* {error && (
           <Alert variant="destructive">
             <CircleAlert className="h-4 w-4" />
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
-        )}
+        )} */}
         <div className="text-center text-sm">
           We sent a code to <strong>{email}</strong>
         </div>

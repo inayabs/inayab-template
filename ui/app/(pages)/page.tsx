@@ -13,12 +13,19 @@ import {
 import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { Bar, BarChart } from "recharts";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
+import { DateRange } from "react-day-picker";
 
 const DashboardPage = () => {
   const [dateRange, setDateRange] = useState({
     from: new Date("2023-01-20"),
     to: new Date("2023-02-09"),
   });
+
+  const handleSelect = (range: DateRange | undefined) => {
+    if (range?.from && range?.to) {
+      setDateRange({ from: range.from, to: range.to });
+    }
+  };
 
   const chartData = [
     { month: "January", desktop: 186, mobile: 80 },
@@ -74,7 +81,7 @@ const DashboardPage = () => {
               <CalendarPicker
                 mode="range"
                 selected={dateRange}
-                onSelect={setDateRange}
+                onSelect={handleSelect}
               />
             </PopoverContent>
           </Popover>

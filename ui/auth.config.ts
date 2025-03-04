@@ -10,6 +10,12 @@ import Credentials from "next-auth/providers/credentials";
 //   code = "Invalid identifier or password";
 // }
 
+interface CredentialsType {
+  email: string;
+  password: string;
+  twoFactorCode?: string;
+}
+
 const authConfig = {
   session: {
     strategy: "jwt",
@@ -30,7 +36,8 @@ const authConfig = {
         twoFactorCode: { type: "text", optional: true },
       },
       async authorize(credentials) {
-        const { email, password, twoFactorCode } = credentials;
+        const { email, password, twoFactorCode } =
+          credentials as CredentialsType;
 
         let user;
 
@@ -39,7 +46,7 @@ const authConfig = {
           user = await login({
             email,
             password,
-            twoFactorCode,
+            twoFactorCode: twoFactorCode ?? null,
           });
 
           // 🚨 If authentication failed, return `null`
@@ -97,15 +104,16 @@ const authConfig = {
         token.last_name = user.last_name;
         token.email = user.email;
         token.token = user.token;
-        token.two_factor = user.two_factor;
+        token.two_factor = user.two_factor; // ✅ Ensure this updates correctly
       }
 
       if (trigger === "update") {
-        console.log("session", session);
+        // console.log("session", session);
         const { user } = session;
         token.first_name = user.first_name;
         token.last_name = user.last_name;
         token.email = user.email;
+        token.two_factor = user.two_factor; // ✅ Ensure update trigger passes `two_factor`
       }
 
       return token;
@@ -113,13 +121,16 @@ const authConfig = {
     async session({ session, token }) {
       session.user = {
         ...session.user,
-        id: token.id,
-        first_name: token.first_name || "",
-        last_name: token.last_name || "",
-        email: token.email,
-        token: token.token || "",
-        two_factor: token.two_factor || false,
+        id: typeof token.id === "string" ? token.id : "",
+        first_name:
+          typeof token.first_name === "string" ? token.first_name : "",
+        last_name: typeof token.last_name === "string" ? token.last_name : "",
+        email: typeof token.email === "string" ? token.email : "",
+        token: typeof token.token === "string" ? token.token : "",
+        two_factor:
+          typeof token.two_factor === "boolean" ? token.two_factor : false, // ✅ Ensure it is properly passed
       };
+
       return session;
     },
   },

@@ -1,13 +1,27 @@
 "use client";
+
 import QueryTable from "@/components/tables/query-table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { UserPen, UserPlus, Users } from "lucide-react";
+import { UserPen, UserPlus, Users, Trash, Loader2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-// import { Checkbox } from "@/components/ui/checkbox";
+import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
+import { deleteUser } from "@/app/api/userApi";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 interface User {
-  id: string;
+  id: number;
   first_name: string;
   last_name: string;
   email: string;
@@ -15,19 +29,68 @@ interface User {
 }
 
 const Page = () => {
+  const { data: session } = useSession();
+  const [open, setOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [refetchUsers, setRefetchUsers] = useState<(() => void) | null>(null);
+
+  const handleDelete = (user: User) => {
+    setSelectedUser(user);
+    setOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!selectedUser) return;
+
+    setLoading(true);
+
+    try {
+      await deleteUser(selectedUser.id); // Call the API
+
+      toast.success("User deleted successfully!");
+      setOpen(false);
+
+      if (refetchUsers) refetchUsers();
+    } catch (error) {
+      let errorMessage = "Failed to delete user.";
+      if (error instanceof AxiosError) {
+        errorMessage = error.response?.data?.message || errorMessage;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDialogClose = () => {
+    if (!loading) setOpen(false);
+  };
+
   const userColumns = [
     { accessorKey: "first_name", header: "First Name" },
     { accessorKey: "last_name", header: "Last Name" },
     { accessorKey: "email", header: "Email" },
-    { accessorKey: "role", header: "Role" },
     {
       accessorKey: "actions",
       header: "Actions",
       cell: ({ row }: { row: { original: User } }) => (
-        <div>
+        <div className="flex space-x-2">
           <Link href={`/users/${row.original.id}`}>
             <UserPen className="w-4 h-4" />
           </Link>
+          {row?.original.role !== "Admin" &&
+            String(row?.original.id) !== session?.user.id && (
+              <button
+                onClick={() => handleDelete(row.original)}
+                className="text-red-500 hover:text-red-700"
+              >
+                <Trash className="w-4 h-4" />
+              </button>
+            )}
         </div>
       ),
     },
@@ -35,48 +98,64 @@ const Page = () => {
 
   return (
     <Card>
-      {" "}
-      {/* Prevents overflow */}
       <CardHeader>
         <CardTitle className="text-xl font-semibold">
           <div className="flex justify-between gap-4">
-            {/* Left Side: Users Title */}
             <div className="flex items-center gap-x-2">
               <Users className="w-6 h-6" />
               <span>Users</span>
             </div>
-
-            {/* Right Side: Buttons (Responsive) */}
             <div className="flex flex-wrap items-center justify-end gap-2">
               <Link href={"/users/new"}>
                 <Button size="sm">
                   <UserPlus className="w-4 h-4" />
-                  <span className="hidden lg:inline">Add User</span>{" "}
-                  {/* Hide on small screens */}
+                  <span className="hidden lg:inline">Add User</span>
                 </Button>
               </Link>
-              {/* <Button size="sm" variant="secondary">
-                <Download className="w-4 h-4" />
-                <span className="hidden lg:inline">
-                  Download Multiple Accounts
-                </span>
-              </Button>
-              <Button size="sm" variant="outline">
-                <FolderSync className="w-4 h-4" />
-                <span className="hidden lg:inline">Sync to Nookal</span>
-              </Button> */}
             </div>
           </div>
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <QueryTable columns={userColumns} fetchUrl="/users" />
-        {/* <UserTable
-          tableLoading={tableLoading}
-          data={userData}
-          columns={columns}
-        /> */}
+        <QueryTable
+          columns={userColumns}
+          fetchUrl="/users"
+          refetchTable={setRefetchUsers}
+        />
       </CardContent>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={open} onOpenChange={handleDialogClose}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete{" "}
+              <strong>
+                {selectedUser?.first_name} {selectedUser?.last_name}
+              </strong>
+              ? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
+            <Button
+              onClick={confirmDelete}
+              className="bg-red-500 text-white"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  <span>Deleting...</span>
+                </>
+              ) : (
+                "Yes, Delete"
+              )}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 };

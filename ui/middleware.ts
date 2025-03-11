@@ -13,5 +13,5 @@ export default auth((req) => {
 
 // Protect the root path (`/`) and `/account/:path*`
 export const config = {
-  matcher: ["/", "/account/:path*", "/admin/:path*"],
+  matcher: ["/", "/account/:path*", "/users/:path*"],
 };

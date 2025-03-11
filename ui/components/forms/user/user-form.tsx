@@ -6,13 +6,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import React from "react";
 import { UseFormReturn } from "react-hook-form";
@@ -96,7 +89,7 @@ const UserForm = ({
           </FormItem>
         )}
       />
-      <FormField
+      {/* <FormField
         control={form.control}
         name="role"
         render={({ field }) => (
@@ -124,7 +117,7 @@ const UserForm = ({
             <FormMessage />
           </FormItem>
         )}
-      />
+      /> */}
 
       <FormField
         control={form.control}

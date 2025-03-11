@@ -33,7 +33,7 @@ const Page = () => {
     first_name: "",
     last_name: "",
     email: "",
-    role: "",
+    role: "User",
     password: "",
   };
 

@@ -6,6 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
+    "start-qa": "next start -p 3001",
+    "start-uat": "next start -p 3002",
     "lint": "next lint"
   },
   "dependencies": {
@@ -29,6 +31,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "input-otp": "^1.4.2",
+    "install": "^0.13.0",
     "lucide-react": "^0.475.0",
     "motion": "^12.4.7",
     "next": "15.1.7",
@@ -36,9 +39,9 @@
     "next-themes": "^0.4.4",
     "nuqs": "^2.4.0",
     "react": "^19.0.0",
-    "react-day-picker": "^8.10.1",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
+    "react-npm": "^2.6.1",
     "recharts": "^2.15.1",
     "sonner": "^2.0.1",
     "tailwind-merge": "^3.0.1",

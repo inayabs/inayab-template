@@ -30,7 +30,6 @@ class AuthController extends Controller
             if (!Auth::attempt($credentials)) {
                 throw new ErrorException("Invalid credentials.");
             }
-
             // ✅ Check if user has 2FA enabled
             if ($user->two_factor) {
                 // 🚀 Step 1: If the request contains a 2FA code, verify it

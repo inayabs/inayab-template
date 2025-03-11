@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use ErrorException;
@@ -45,7 +46,7 @@ class UserController extends Controller
     }
     
 
-    public function store(Request $request){
+    public function store(UserRequest $request){
         try{
             DB::beginTransaction();
             
@@ -76,7 +77,7 @@ class UserController extends Controller
         }
     }
 
-    public function update(Request $request,$id){
+    public function update(UserRequest $request,$id){
         // update user
         try{
             DB::beginTransaction();
@@ -161,6 +162,32 @@ class UserController extends Controller
             ],400);
         }
     }
-
     
+    public function destroy($id)
+    {
+        // Find the user by ID
+        $user = User::find($id);
+
+        // Check if user exists
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        try {
+            // Delete the user
+            $user->delete();
+
+            return response()->json([
+                'message' => 'User deleted successfully'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error deleting user',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 }

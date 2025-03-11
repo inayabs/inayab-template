@@ -1,32 +1,12 @@
 "use client";
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Download } from "lucide-react";
-import { format } from "date-fns";
+import { Download } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { Bar, BarChart } from "recharts";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
-import { DateRange } from "react-day-picker";
 
 const DashboardPage = () => {
-  const [dateRange, setDateRange] = useState({
-    from: new Date("2023-01-20"),
-    to: new Date("2023-02-09"),
-  });
-
-  const handleSelect = (range: DateRange | undefined) => {
-    if (range?.from && range?.to) {
-      setDateRange({ from: range.from, to: range.to });
-    }
-  };
-
   const chartData = [
     { month: "January", desktop: 186, mobile: 80 },
     { month: "February", desktop: 305, mobile: 200 },
@@ -66,25 +46,7 @@ const DashboardPage = () => {
         <h2 className="text-2xl font-semibold">Dashboard</h2>
         <div className="flex flex-wrap gap-2">
           {/* Date Range Picker */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="flex items-center gap-2 whitespace-nowrap"
-              >
-                <Calendar className="w-4 h-4" />
-                {format(dateRange.from, "MMM dd, yyyy")} -{" "}
-                {format(dateRange.to, "MMM dd, yyyy")}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent>
-              <CalendarPicker
-                mode="range"
-                selected={dateRange}
-                onSelect={handleSelect}
-              />
-            </PopoverContent>
-          </Popover>
+
           {/* Download Button */}
           <Button
             variant="default"

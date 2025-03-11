@@ -23,17 +23,23 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSession } from "next-auth/react";
 
 const ROWS_PER_PAGE = 10;
 
 interface QueryTableProps<T> {
   fetchUrl: string;
   columns: ColumnDef<T>[];
+  refetchTable: (refetchFn: () => void) => void;
 }
 
-const QueryTable = <T,>({ fetchUrl, columns }: QueryTableProps<T>) => {
+const QueryTable = <T,>({
+  fetchUrl,
+  columns,
+  refetchTable,
+}: QueryTableProps<T>) => {
   const [isHydrated, setIsHydrated] = useState(false);
-
+  const { data: session } = useSession();
   useEffect(() => {
     setIsHydrated(true);
   }, []);
@@ -53,7 +59,7 @@ const QueryTable = <T,>({ fetchUrl, columns }: QueryTableProps<T>) => {
     }
   }, [debouncedFilter, filter]);
 
-  const { data, isFetching } = useQuery({
+  const { data, isFetching, refetch } = useQuery({
     queryKey: ["users", page, filter, sortColumn, sortOrder],
     queryFn: async () => {
       const response = await axiosInstance.get(fetchUrl, {
@@ -69,7 +75,7 @@ const QueryTable = <T,>({ fetchUrl, columns }: QueryTableProps<T>) => {
     },
     placeholderData: (previousData) => previousData,
     // keepPreviousData: true,
-    enabled: isHydrated,
+    enabled: isHydrated && !!session,
   });
 
   const table = useReactTable({
@@ -93,6 +99,12 @@ const QueryTable = <T,>({ fetchUrl, columns }: QueryTableProps<T>) => {
   const totalRows = data?.total || 0;
   const startRow = totalRows === 0 ? 0 : (page - 1) * ROWS_PER_PAGE + 1;
   const endRow = Math.min(page * ROWS_PER_PAGE, totalRows);
+
+  useEffect(() => {
+    if (refetchTable) {
+      refetchTable(() => refetch); //
+    }
+  }, [refetch, refetchTable]);
 
   if (!isHydrated) return <Skeleton className="h-20 w-full" />;
 

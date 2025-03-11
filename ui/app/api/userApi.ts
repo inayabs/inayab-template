@@ -38,3 +38,7 @@ export const getSingleUser = async (id: number) => {
 export const updateSingleUser = async (id: number, data: UserGeneral) => {
   return axiosInstance.put(`${url}/${id}`, data);
 };
+
+export const deleteUser = async (id: number) => {
+  return axiosInstance.delete(`${url}/${id}`);
+};

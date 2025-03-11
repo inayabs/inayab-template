@@ -106,7 +106,7 @@ const Page = () => {
 
   useEffect(() => {
     fetchUser();
-  });
+  }, [numericUserId]);
 
   return (
     <div className="flex flex-col gap-y-3">
